@@ -268,3 +268,23 @@ body {
 }
 
 
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        width: 95%;
+    }
+
+    .animated-title {
+        font-size: 28px;
+    }
+
+    #wheel-container {
+        max-width: 250px;
+    }
+
+    .custom-button {
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+}
