@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin the Wheel</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+    <h1 class="animated-title">Spin the Wheel!</h1>
+	<div id="wheel-container">
+		<div id="top-pointer"></div> <!-- Circular pointer -->
+		<canvas id="wheelCanvas" width="400" height="400"></canvas>
+		<div id="pointer">Table</div> <!-- Center Indicator -->
+	</div>
+
+    <p id="message"></p> <!-- Message Below the Wheel -->
+    <div class="buttons">
+        <button id="spinButton" class="custom-button">Get Table Number</button>
+        <button id="returnButton" class="custom-button">Return</button>
+    </div>
+</div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

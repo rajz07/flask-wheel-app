@@ -1,0 +1,270 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('/static/pexels-juanpphotoandvideo-1242348.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    text-align: center;
+}
+
+/* Container */
+.container {
+    background: rgba(0, 0, 0, 0.7); /* Transparent black background */
+    padding: 30px; /* Consistent padding */
+    border-radius: 10px;
+    width: 60%; /* Same width as the first page */
+    margin: 5% auto; /* Adjusted margin for wheel */
+}
+
+/* Title Animation */
+.animated-title {
+    font-size: 48px;
+    color: #ffcc00;
+    animation: glow 1.5s infinite alternate;
+    margin-bottom: 20px;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ff9900;
+    }
+    to {
+        text-shadow: 0 0 20px #ff6600, 0 0 30px #ff3300, 0 0 40px #ff0000;
+    }
+}
+
+/* Wheel Container */
+#wheel-container {
+    position: relative;
+    margin: 20px auto;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 5px solid gold; /* Golden border */
+    box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.8); /* Glowing effect */
+    overflow: hidden; /* Clip content */
+    background: radial-gradient(circle, #4b4b4b, #2a2a2a); /* Subtle texture */
+}
+
+/* Fixed Circular Pointer */
+#top-pointer {
+    position: absolute;
+    top: 70%; /* Adjust to align with the wheel */
+    left: 95%;
+    transform: translateX(-50%) rotate(308.571deg);
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, rgba(255, 0, 0, 1), rgba(200, 0, 0, 0.9));
+    border: 2px solid #000;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 1), 0 0 20px rgba(255, 165, 0, 0.9);
+    z-index: 3;
+}
+
+/* Pointer (Center Indicator) */
+#pointer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.7), rgba(0, 0, 0, 0.9));
+    padding: 10px 20px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid gold;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 1);
+    z-index: 2;
+}
+
+/* Message Below the Wheel */
+#message {
+    margin-top: 20px;
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+
+
+/* Dropdown Styling */
+.custom-dropdown {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ffcc00;
+    border-radius: 5px;
+    background: #333;
+    color: #fff;
+    width: 80%;
+    margin: 10px auto;
+	text-transform: uppercase; /* Ensures all text is displayed in uppercase */
+}
+
+.custom-dropdown option {
+    background: #333;
+    color: #fff;
+	text-transform: uppercase; /* Ensures all text is displayed in uppercase */
+}
+
+
+/* Buttons */
+.custom-button {
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #ffcc00;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px;
+}
+
+.custom-button:hover {
+    background-color: #ff9900;
+    color: #fff;
+}
+
+/* Modal Styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 100; /* Above everything */
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    padding: 10px 0;
+}
+
+.modal-content {
+    margin: auto;
+    width: fit-content;
+    background-color: #fefefe;
+    border: 1px solid #888;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+}
+
+/* Container Styling */
+.container {
+    background: rgba(0, 0, 0, 0.8); /* Darker transparent background */
+    padding: 30px;
+    border-radius: 10px;
+    width: 70%;
+    margin: 5% auto;
+	text-transform: uppercase; /* Ensures all text is displayed in uppercase */
+}
+
+/* Table Status Styling */
+.table-status {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffcc00;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    border: 2px solid #ffcc00;
+	
+}
+
+.table-status h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #fff;
+	
+}
+
+.table-status ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+	
+}
+
+.table-status li {
+    margin: 5px 0;
+}
+
+/* Search Bar Styling */
+.custom-search {
+    width: 90%;
+    padding: 10px;
+    font-size: 18px;
+    margin: 20px auto;
+    border: 2px solid #ffcc00;
+    border-radius: 10px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Table Styling */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.custom-table thead {
+    background-color: #ffcc00;
+    color: #000;
+    font-weight: bold;
+}
+
+.custom-table th, .custom-table td {
+    border: 1px solid #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+.custom-table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-table tbody tr:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.custom-table tbody tr:hover {
+    background-color: #ffcc00;
+    color: #000;
+    cursor: pointer;
+}
+
+/* Back Button Styling */
+.custom-button {
+    margin-top: 20px;
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #ffcc00;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.custom-button:hover {
+    background-color: #ff9900;
+    color: #fff;
+}
+
+

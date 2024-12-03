@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Assignments</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        function searchName() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll(".table-row");
+
+            rows.forEach(row => {
+                const name = row.querySelector(".name-cell").textContent.toLowerCase();
+                row.style.display = name.includes(input) ? "" : "none";
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="animated-title">Table Assignments</h1>
+        
+        <!-- Table Status -->
+        <div class="table-status">
+            <h2>Table Status</h2>
+            <ul>
+                {% for table, count in table_status.items() %}
+                <li>Table {{ table }}: {{ count }} assigned</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <!-- Search Bar -->
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search for a name..."
+            onkeyup="searchName()"
+            class="custom-search"
+        >
+        
+        <!-- Table -->
+        <table border="1" class="custom-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Table Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in assignments %}
+                <tr class="table-row">
+                    <td class="name-cell">{{ row['NameList'] }}</td>
+                    <td>{{ row['TableNumber'] if row['TableNumber'] else 'Not Assigned' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- Back Button -->
+        <button onclick="window.location.href='/'" class="custom-button">Back to Home</button>
+    </div>
+</body>
+</html>

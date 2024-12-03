@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FeedMe Annual Dinner 2024</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="animated-title">FeedMe Annual Dinner 2024</h1>
+        <h2>Select Your Name:</h2>
+        <select id="nameDropdown" class="custom-dropdown">
+            <option value="">-- Select Name --</option>
+            {% for name in names %}
+            <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <button class="custom-button" onclick="goToWheel()">Next</button>
+    </div>
+	
+	
+	
+    <script src="/static/script.js"></script>
+</body>
+</html>
