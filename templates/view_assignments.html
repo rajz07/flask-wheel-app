@@ -6,21 +6,93 @@
     <title>Table Assignments</title>
     <link rel="stylesheet" href="/static/style.css">
     <script>
-        function searchName() {
+        function searchTableOrName() {
             const input = document.getElementById("searchInput").value.toLowerCase();
             const rows = document.querySelectorAll(".table-row");
 
             rows.forEach(row => {
                 const name = row.querySelector(".name-cell").textContent.toLowerCase();
-                row.style.display = name.includes(input) ? "" : "none";
+                const table = row.querySelector(".table-cell").textContent.toLowerCase();
+                row.style.display = name.includes(input) || table.includes(input) ? "" : "none";
             });
+        }
+
+        function clearAllData() {
+            const password = prompt("Enter admin password:");
+            if (password === "3699") {
+                fetch("/clear_all_data", { method: "POST" })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("All data cleared successfully!");
+                            location.reload();
+                        } else {
+                            alert(data.error);
+                        }
+                    });
+            } else {
+                alert("Incorrect password!");
+            }
+        }
+
+        function manuallyAssignTable() {
+            const name = prompt("Enter the name:");
+            const table = prompt("Enter the table number:");
+            const password = prompt("Enter admin password:");
+
+            if (password === "3699") {
+                fetch("/manually_assign_table", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, table }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Table ${table} assigned to ${name} successfully!`);
+                            location.reload();
+                        } else {
+                            alert(data.error);
+                        }
+                    });
+            } else {
+                alert("Incorrect password!");
+            }
+        }
+
+        function clearSinglePerson(name) {
+            const password = prompt("Enter admin password:");
+            if (password === "3699") {
+                fetch("/clear_person_table", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`${name}'s table assignment cleared!`);
+                            location.reload();
+                        } else {
+                            alert(data.error);
+                        }
+                    });
+            } else {
+                alert("Incorrect password!");
+            }
         }
     </script>
 </head>
 <body>
     <div class="container">
         <h1 class="animated-title">Table Assignments</h1>
-        
+
+        <!-- Admin Buttons -->
+        <div>
+            <button class="custom-button" onclick="clearAllData()">Clear All Data</button>
+            <button class="custom-button" onclick="manuallyAssignTable()">Manually Assign Table</button>
+        </div>
+
         <!-- Table Status -->
         <div class="table-status">
             <h2>Table Status</h2>
@@ -30,34 +102,39 @@
                 {% endfor %}
             </ul>
         </div>
-        
+
         <!-- Search Bar -->
         <input
             type="text"
             id="searchInput"
-            placeholder="Search for a name..."
-            onkeyup="searchName()"
+            placeholder="Search for a name or table number..."
+            onkeyup="searchTableOrName()"
             class="custom-search"
         >
-        
+
         <!-- Table -->
         <table border="1" class="custom-table">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Table Number</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in assignments %}
                 <tr class="table-row">
                     <td class="name-cell">{{ row['NameList'] }}</td>
-                    <td>{{ row['TableNumber'] if row['TableNumber'] else 'Not Assigned' }}</td>
+                    <td class="table-cell">{{ row['TableNumber'] if row['TableNumber'] else 'Not Assigned' }}</td>
+                    <td>
+						<button class="small-button" onclick="clearSinglePerson('{{ row['NameList'] }}')">Clear</button>
+					</td>
+
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        
+
         <!-- Back Button -->
         <button onclick="window.location.href='/'" class="custom-button">Back to Home</button>
     </div>

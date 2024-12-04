@@ -13,10 +13,12 @@ df = pd.read_excel(name_file)
 if "TableNumber" not in df.columns:
     df["TableNumber"] = None
 
-name_list = df["NameList"].tolist()
+# Recalculate table capacity based on the existing Excel data
+table_capacity = {i: 0 for i in range(1, 8)}
+for table_number in df["TableNumber"].dropna().astype(int):
+    if table_number in table_capacity:
+        table_capacity[table_number] += 1
 
-# Initialize table capacity
-table_capacity = {i: 0 for i in range(1, 8)}  # Tables 1 to 7 with max capacity of 10
 
 @app.route("/")
 def index():
@@ -24,9 +26,11 @@ def index():
     available_names = df[df["TableNumber"].isna()]["NameList"].tolist()
     return render_template("index.html", names=available_names)
 
+
 @app.route("/wheel")
 def wheel():
     return render_template("wheel.html")
+
 
 @app.route("/assign_table", methods=["POST"])
 def assign_table():
@@ -37,15 +41,37 @@ def assign_table():
         if pd.notna(assigned_table):
             return jsonify({"error": f"{name} is already assigned to Table {int(assigned_table)}"}), 400
 
-        # Assign a random table
-        while True:
-            table = random.randint(1, 7)
-            if table_capacity[table] < 10:  # Ensure table isn't full
-                df.loc[df["NameList"] == name, "TableNumber"] = table
-                table_capacity[table] += 1
-                df.to_excel(name_file, index=False)  # Update the Excel file
-                return jsonify({"table": table})
+        # Get available tables that are not full
+        available_tables = [table for table, count in table_capacity.items() if count < 10]
+
+        # Ensure there are available tables
+        if not available_tables:
+            return jsonify({"error": "All tables are full!"}), 400
+
+        # Assign a random available table
+        table = random.choice(available_tables)
+        df.loc[df["NameList"] == name, "TableNumber"] = table
+        table_capacity[table] += 1
+        df.to_excel(name_file, index=False)  # Update the Excel file
+        return jsonify({"table": table})
+
     return jsonify({"error": "Invalid name"}), 400
+
+
+@app.route("/available_tables")
+def available_tables():
+    # Refresh the data from the Excel sheet
+    df = pd.read_excel(name_file)
+
+    # Count table assignments and filter tables with capacity < 10
+    table_status = {i: (df["TableNumber"] == i).sum() for i in range(1, 8)}
+    available_tables = [table for table, count in table_status.items() if count < 10]
+
+    return jsonify({"available_tables": available_tables})
+
+
+
+
 
 
 @app.route("/update_assignment", methods=["POST"])
@@ -59,12 +85,16 @@ def update_assignment():
         if pd.notna(assigned_table):
             return jsonify({"error": f"{name} is already assigned to Table {int(assigned_table)}"}), 400
 
+        if table_capacity[int(table)] >= 10:
+            return jsonify({"error": f"Table {int(table)} is full"}), 400
+
         df.loc[df["NameList"] == name, "TableNumber"] = table  # Assign table
         table_capacity[int(table)] += 1
         df.to_excel(name_file, index=False)  # Save to Excel
         return jsonify({"success": True})
 
     return jsonify({"error": "Invalid name or already assigned"}), 400
+
 
 @app.route("/view_assignments")
 def view_assignments():
@@ -82,6 +112,46 @@ def view_assignments():
     # Convert to a list of dictionaries for easier rendering in HTML
     assignments = updated_df.to_dict(orient="records")
     return render_template("view_assignments.html", assignments=assignments, table_status=table_status)
+    
+@app.route("/clear_all_data", methods=["POST"])
+def clear_all_data():
+    try:
+        df["TableNumber"] = None
+        df.to_excel(name_file, index=False)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/manually_assign_table", methods=["POST"])
+def manually_assign_table():
+    data = request.json
+    name = data.get("name")
+    table = data.get("table")
+
+    if name not in df["NameList"].values:
+        return jsonify({"error": "Name not found"}), 400
+
+    try:
+        df.loc[df["NameList"] == name, "TableNumber"] = int(table)
+        df.to_excel(name_file, index=False)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/clear_person_table", methods=["POST"])
+def clear_person_table():
+    data = request.json
+    name = data.get("name")
+
+    if name not in df["NameList"].values:
+        return jsonify({"error": "Name not found"}), 400
+
+    try:
+        df.loc[df["NameList"] == name, "TableNumber"] = None
+        df.to_excel(name_file, index=False)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 

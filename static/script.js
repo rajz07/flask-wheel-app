@@ -1,3 +1,4 @@
+
 let currentRotation = 0; // Tracks the total rotation of the wheel
 const tableNumbers = ["1", "2", "3", "4", "5", "6", "7"];
 const segmentCount = tableNumbers.length;
@@ -83,50 +84,81 @@ function getGradientColor(index) {
     return gradients[index % gradients.length];
 }
 
+
+
+
 function spinWheel() {
     const spinButton = document.getElementById("spinButton");
-    spinButton.disabled = true;
+    spinButton.style.display = "none"; // Hide the button after click
 
-    const randomSpin = Math.floor(Math.random() * 360) + 1080; // At least 3 full spins plus random offset
-    currentRotation += randomSpin;
+    // Fetch available tables before spinning
+    fetch("/available_tables")
+        .then(response => response.json())
+        .then(data => {
+            const availableTables = data.available_tables;
 
-    const canvas = document.getElementById("wheelCanvas");
-    canvas.style.transition = "transform 3s ease-out";
-    canvas.style.transform = `rotate(${currentRotation}deg)`;
+            if (availableTables.length === 0) {
+                alert("All tables are full!");
+                spinButton.style.display = "block"; // Show the button again if no tables available
+                return;
+            }
 
-    // Wait for the spin animation to complete
-    setTimeout(() => {
-        const normalizedRotation = currentRotation % 360; // Normalize to 0-360 degrees
-        const pointerAngle = (360 - normalizedRotation) % 360; // Pointer at 0 degrees
-        const selectedIndex = Math.round(pointerAngle / anglePerSegment) % segmentCount;
+            const segmentCount = availableTables.length;
+            const anglePerSegment = 360 / segmentCount;
+            const randomSpin = Math.floor(Math.random() * 360) + 1080; // At least 3 full spins plus random offset
+            currentRotation += randomSpin;
 
-        const selectedTable = tableNumbers[selectedIndex];
-        console.log(`Normalized Rotation: ${normalizedRotation}`);
-        console.log(`Pointer Angle: ${pointerAngle}`);
-        console.log(`Selected Index: ${selectedIndex}`);
+            const canvas = document.getElementById("wheelCanvas");
+            canvas.style.transition = "transform 3s ease-out";
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-        // Position the pointer to align with the selected segment
-        const topPointer = document.getElementById("top-pointer");
-        const pointerPosition = (selectedIndex * anglePerSegment) - anglePerSegment / 2;
-        topPointer.style.transform = `translateX(-50%) rotate(${pointerPosition}deg)`;
+            // Wait for the spin animation to complete
+            setTimeout(() => {
+                const normalizedRotation = currentRotation % 360; // Normalize to 0-360 degrees
+                const pointerAngle = (360 - normalizedRotation) % 360; // Pointer at 0 degrees
+                const selectedIndex = Math.floor(pointerAngle / anglePerSegment) % segmentCount;
 
-        // Update the center indicator
-        const pointer = document.getElementById("pointer");
-        pointer.innerText = `Table ${selectedTable}`;
+                const selectedTable = availableTables[selectedIndex];
 
-        // Retrieve the attendee's name from localStorage
-        const attendeeName = localStorage.getItem("selectedEmployee") || "Guest";
+                // Add glow effect to pointer
+                const pointer = document.getElementById("pointer");
+                pointer.innerText = `Table ${selectedTable}`;
+                pointer.classList.add("glow");
+                setTimeout(() => pointer.classList.remove("glow"), 10000);
 
-        // Update the message below the wheel
-        const message = document.getElementById("message");
-        message.innerHTML = `🎉 Welcome <strong>${attendeeName}</strong>! You are assigned to <strong>Table ${selectedTable}</strong>! 🎉`;
+                // Retrieve the attendee's name from localStorage
+                const attendeeName = localStorage.getItem("selectedEmployee") || "Guest";
 
-        // Prevent duplicate draws and update the Excel sheet
-        updateAssignment(attendeeName, selectedTable);
+                // Update the message below the wheel
+                const message = document.getElementById("message");
+                message.innerHTML = `🎉 Welcome <br>
+                                    <strong>${attendeeName}</strong>! <br>
+                                    You are assigned to <strong>Table ${selectedTable}</strong>! 🎉`;
 
-        spinButton.disabled = false; // Re-enable the button
-    }, 3000);
+                // Add glow effect to message
+                message.classList.add("glow");
+                setTimeout(() => message.classList.remove("glow"), 10000);
+
+                // Prevent duplicate draws and update the Excel sheet
+                updateAssignment(attendeeName, selectedTable);
+
+                spinButton.style.display = "none"; // Hide the button after spin completion
+				
+				// Redirect to the main page after 10 seconds
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 9000);
+            }, 3000);
+        })
+        .catch(err => {
+            console.error("Error fetching available tables:", err);
+            spinButton.style.display = "block"; // Show the button again in case of error
+        });
 }
+
+
+
+
 
 // Function to update assignment and prevent duplicates
 function updateAssignment(name, table) {
@@ -173,3 +205,33 @@ function updateAssignment(name, table) {
         })
         .catch(error => console.error("Error updating assignment:", error));
 }
+
+// Update Wheel Segments Dynamically Based on Availability
+function updateWheelSegments() {
+    fetch("/view_assignments") // Fetch table status
+        .then(response => response.json())
+        .then(data => {
+            const tableStatus = data.table_status;
+            const availableTables = Object.keys(tableStatus)
+                .filter(table => tableStatus[table] < 10)
+                .map(table => parseInt(table)); // Get tables with <10 assigned
+
+            if (availableTables.length === 0) {
+                alert("All tables are full!");
+                return;
+            }
+
+            // Redraw the wheel with available tables only
+            tableNumbers = availableTables; // Update global tableNumbers
+            drawWheel();
+        })
+        .catch(error => console.error("Error fetching table status:", error));
+}
+
+// Call this function to redraw the wheel before spinning
+document.addEventListener("DOMContentLoaded", function () {
+    updateWheelSegments(); // Ensure wheel updates dynamically
+    const spinButton = document.getElementById("spinButton");
+    spinButton.addEventListener("click", spinWheel);
+
+});
